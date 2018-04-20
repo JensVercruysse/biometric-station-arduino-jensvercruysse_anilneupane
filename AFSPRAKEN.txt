@@ -1,0 +1,5 @@
+AFSPRAKEN
+
+Hartslag:      [XXX]
+Temperatuur:   [XX,XX]
+Accelerometer: [XXX|XXX|XXX]
