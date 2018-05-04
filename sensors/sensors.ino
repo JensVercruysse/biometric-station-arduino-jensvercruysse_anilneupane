@@ -1,18 +1,21 @@
-#include <SparkFunTMP102.h>  // librabry for temp sensor
-#include <SparkFun_MMA8452Q.h> // library for accelerometer
-#include <LiquidCrystal.h>    // library for lcd display
-#include <Wire.h>             // library to communicate with the sensor
-
-
+#include <SparkFunTMP102.h>  
+#include <SparkFun_MMA8452Q.h>
+#include <LiquidCrystal.h> 
+#include <Wire.h>   
+#define USE_ARDUINO_INTERRUPTS true   
+#include <PulseSensorPlayground.h>  
 // declarations
 
-int PulseSensorPurplePin = 0;       
-int LED13 = 13;   
-int Signal;                
-int Threshold = 550;    
+const int PulseWire = 0;      
+const int LED13 = 13;                
+int Threshold = 550;   
+PulseSensorPlayground pulseSensor;
+ 
 const int ALERT_PIN = A3;
-TMP102 sensor0(0x48);         
+TMP102 sensor0(0x48);    
+     
 LiquidCrystal lcd (8,9,4,5,6,7);
+
 MMA8452Q accel;
 
 
@@ -20,8 +23,13 @@ void setup() {
   Serial.begin(115200); 
   lcd.begin(20,4);
   
-  pinMode(LED13,OUTPUT);      //pulse 
-     
+ pulseSensor.analogInput(PulseWire);     //pulse
+  pulseSensor.blinkOnPulse(LED13); 
+   pulseSensor.setThreshold(Threshold); 
+     if (pulseSensor.begin()) {
+  //  Serial.println("We created a pulseSensor Object !");    
+  }
+
   pinMode(ALERT_PIN,INPUT);    // temperature
   sensor0.begin();  
   sensor0.setFault(0);  
@@ -38,9 +46,15 @@ void setup() {
 }  
 void loop() {
   lcd.setCursor(0, 0); 
-  Signal = analogRead(PulseSensorPurplePin);        //pulse                                   
- // Serial.println(Signal/6); 
-                 
+ int myBPM = pulseSensor.getBeatsPerMinute();  
+                                              
+
+if (pulseSensor.sawStartOfBeat()) {            
+// Serial.println("♥  A HeartBeat Happened ! "); 
+ // Serial.print("BPM: ");                        
+ // Serial.println(myBPM);                      
+}
+      
 
 
   float temperature;                          //temperature
@@ -56,8 +70,8 @@ void loop() {
   {
     accel.read();
     
-  // Serial.print(accel.cx, 3);
-//  Serial.print("\t");
+ // Serial.print(accel.cx, 3);
+ // Serial.print("\t");
  // Serial.print(accel.cy, 3);
  // Serial.print("\t");
  // Serial.print(accel.cz, 3);
@@ -66,10 +80,10 @@ void loop() {
 
   }
 
-  Serial.print(String("[") + Signal/6 + String("|") + ((temperature)-3) + String("#"));   
+  Serial.print(String("[") + myBPM + String("|") + ((temperature)-3) + String("#"));   
   // this string could be replaced by 
   /***Serial.print ("[");
-  Serial.print (Signal/6); 
+  Serial.print (myBPM); 
   Serial.print ("|");
   Serial.print ((temperature)-3);
   Serial.print("#");
@@ -82,22 +96,29 @@ void loop() {
   Serial.println("]"); 
 
 lcd.setCursor(0, 0);
-  lcd.print(String("[") + Signal/6 + String("|") + ((temperature)-3) + String("#"));
+lcd.print("BPM:");
+lcd.print (myBPM);
+lcd.print (" ");
+lcd.print("T:");
+lcd.print((temperature)-3);
+     
  /*** lcd.print ("[");
   lcd.print (Signal/6); 
   lcd.print ("|");
   lcd.print ((temperature)-3);
   lcd.print("#");  ***/
-  lcd.setCursor(0, 1);
-  lcd.print(accel.cx, 2);
-  lcd.print("$");
-  lcd.print(accel.cy, 2);
-  lcd.print("€");
-  lcd.print(accel.cz, 2);
-  lcd.print("]");
+
+  
+lcd.setCursor(0, 1);
+lcd.print(accel.cx, 2);
+lcd.print(" ");
+lcd.print(accel.cy, 2);
+lcd.print(" ");
+lcd.print(accel.cz, 2);
+
 
  
  delay(1000);
-   
+ lcd.clear();
    
 }
