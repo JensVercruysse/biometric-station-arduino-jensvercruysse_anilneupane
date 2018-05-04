@@ -1,7 +1,7 @@
 #include <LiquidCrystal.h>
 
 #include <Wire.h> 
-#include "SparkFunTMP102.h" r
+#include "SparkFunTMP102.h" 
 // Connections
 // VCC = 3.3V
 // GND = GND
@@ -33,9 +33,9 @@ void loop()
   sensor0.wakeup();
   temperature = sensor0.readTempC();
   Serial.print("Temperature: ");
-  Serial.println((temperature)-3);
+  Serial.println((temperature)-3 + String("°C"));
   lcd.setCursor(0, 1); 
-  lcd.print((temperature)-3);
+  lcd.print((temperature)-3 + String( char(223))+String("C"));
                   
   
   delay(1000);  
