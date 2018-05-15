@@ -4,8 +4,8 @@
 #include <Wire.h>   
 #define USE_ARDUINO_INTERRUPTS true   
 #include <PulseSensorPlayground.h>  
-// declarations
 
+// declarations
 const int PulseWire = 0;      
 const int LED13 = 13;                
 int Threshold = 550;   
